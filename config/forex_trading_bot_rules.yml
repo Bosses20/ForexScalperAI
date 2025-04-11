@@ -1,0 +1,74 @@
+groups:
+- name: forex_trading_bot_alerts
+  rules:
+  - alert: TradingBotDown
+    expr: up{service="trading_api"} == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Trading Bot API is down"
+      description: "The trading bot API has been down for more than 1 minute."
+
+  - alert: MT5ConnectorDown
+    expr: up{service="mt5_connector"} == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "MT5 Connector is down"
+      description: "MT5 Connector service has been down for more than 1 minute."
+
+  - alert: HighCpuLoad
+    expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU load"
+      description: "CPU load is > 80% for 5 minutes."
+
+  - alert: HighMemoryUsage
+    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory usage"
+      description: "Memory usage is > 85% for 5 minutes."
+
+  - alert: LowDiskSpace
+    expr: node_filesystem_free_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} * 100 < 10
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Low disk space"
+      description: "Disk space is < 10%."
+
+  - alert: UnusualTradingActivity
+    expr: forex_trading_frequency_per_minute > 10
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Unusual trading activity detected"
+      description: "The trading bot is executing more than 10 trades per minute."
+
+  - alert: HighDrawdown
+    expr: forex_account_drawdown_percentage > 10
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High account drawdown"
+      description: "Account drawdown is greater than 10% for 5 minutes."
+
+  - alert: APIRateLimitApproaching
+    expr: forex_api_remaining_requests / forex_api_total_requests * 100 < 20
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "API rate limit approaching"
+      description: "Less than 20% of API rate limit remaining."

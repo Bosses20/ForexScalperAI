@@ -1,0 +1,36 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['localhost:9093']
+
+rule_files:
+  - "forex_trading_bot_rules.yml"
+
+scrape_configs:
+  - job_name: 'forex_trading_bot'
+    static_configs:
+      - targets: ['localhost:8000']
+        labels:
+          service: 'trading_api'
+      
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ['localhost:9100']
+        labels:
+          instance: 'production_server'
+  
+  - job_name: 'mt5_connector'
+    static_configs:
+      - targets: ['localhost:8001']
+        labels:
+          service: 'mt5_connector'
+          
+  - job_name: 'database_metrics'
+    static_configs:
+      - targets: ['localhost:9187']
+        labels:
+          service: 'trading_database'

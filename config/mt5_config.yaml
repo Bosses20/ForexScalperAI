@@ -1,0 +1,555 @@
+# MetaTrader 5 Configuration File
+# This file configures all aspects of the MT5 integration
+
+# MT5 Connection Settings
+mt5:
+  login: 12345678  # Replace with your MT5 account number
+  password: "your_password"  # Replace with your MT5 password
+  server: "MetaQuotes-Demo"  # Replace with your broker's server name
+  path: ""  # Leave empty to use default path
+  max_retries: 3  # Number of connection retry attempts
+  retry_delay: 5  # Seconds between retry attempts
+  ping_interval: 60  # Seconds between connection checks
+
+# Data Feed Settings
+data_feed:
+  max_bars: 1000  # Maximum number of candles to fetch
+  update_interval: 1  # Data update interval in seconds
+  store_history: true  # Whether to store historical data
+  history_limit: 10000  # Maximum bars to store in memory
+  include_indicators: true  # Pre-calculate technical indicators
+  indicators:
+    sma: [5, 10, 20, 50, 100]  # SMA periods
+    ema: [9, 21, 55, 200]  # EMA periods
+    rsi: [14]  # RSI periods
+    macd: [[12, 26, 9]]  # MACD parameters [fast, slow, signal]
+    bollinger: [[20, 2]]  # Bollinger Bands parameters [period, std]
+    atr: [14]  # ATR period
+
+# Trading Settings
+trading:
+  # Optimized symbol selection for scalping with high liquidity and low spreads
+  symbols:
+    # Major forex pairs - ideal for scalping due to high liquidity and tight spreads
+    forex:
+      - { name: "EURUSD", type: "forex", description: "Euro vs US Dollar - Highest liquidity major pair" }
+      - { name: "GBPUSD", type: "forex", description: "British Pound vs US Dollar - Volatile with good movement" }
+      - { name: "USDJPY", type: "forex", description: "US Dollar vs Japanese Yen - Excellent for Asian session" }
+      - { name: "AUDUSD", type: "forex", description: "Australian Dollar vs US Dollar - Good for Asian/Early European sessions" }
+      - { name: "USDCAD", type: "forex", description: "US Dollar vs Canadian Dollar - Oil-sensitive pair" }
+      - { name: "EURGBP", type: "forex", description: "Euro vs British Pound - Tight range during European session" }
+      - { name: "EURJPY", type: "forex", description: "Euro vs Japanese Yen - High volatility cross pair" }
+    
+    # Deriv Synthetic Indices for trading when forex markets are quiet
+    synthetic:
+      # Volatility Indices - constant volatility, perfect for scalping strategies
+      - { name: "Volatility 75 Index", type: "synthetic", sub_type: "volatility", description: "75% volatility - best balance of movement and predictability" }
+      - { name: "Volatility 100 Index", type: "synthetic", sub_type: "volatility", description: "100% volatility - more aggressive movement" }
+      
+      # Crash/Boom Indices - for capturing sudden market moves
+      - { name: "Crash 1000 Index", type: "synthetic", sub_type: "crash_boom", description: "Sudden crashes every ~1000 ticks on average" }
+      - { name: "Boom 500 Index", type: "synthetic", sub_type: "crash_boom", description: "Sudden booms every ~500 ticks on average" }
+      
+      # Step Indices - for very consistent movement patterns
+      - { name: "Step Index", type: "synthetic", sub_type: "step", description: "Fixed step movements, ideal for scalping" }
+  
+  # Trading timeframes - optimized for scalping
+  timeframes: ["M1", "M5", "M15"]  # Scalping-focused timeframes
+  strategy_timeframe: "M5"  # Primary timeframe for strategy execution
+  update_interval: 1  # Trading loop update interval in seconds
+  
+  # Optimized trading sessions - focus on high liquidity periods
+  trade_session_hours:
+    forex:
+      - { session: "london_new_york_overlap", hours: [13, 17], description: "London/NY overlap - highest liquidity period" }
+      - { session: "london_open", hours: [8, 12], description: "London session open - high volatility" }
+      - { session: "new_york_open", hours: [13, 16], description: "New York session open - high volatility" }
+      - { session: "tokyo_open", hours: [0, 3], description: "Tokyo session open - good for JPY pairs" }
+    synthetic:
+      - { session: "all_day", hours: [0, 24], description: "24/7 trading available" }
+
+# Enhanced Risk Management System
+risk_management:
+  # Core risk parameters
+  max_risk_per_trade: 0.01  # Maximum risk per trade (1% of account)
+  max_daily_risk: 0.05  # Maximum daily risk (5% of account)
+  max_drawdown_percent: 0.15  # Maximum drawdown before shutdown (15%)
+  
+  # Account-based position sizing
+  account_tiers:
+    nano:  # $0-$100
+      max_lot: 0.01
+      risk_percent: 0.01
+      max_trades: 1
+    micro:  # $101-$500
+      max_lot: 0.01
+      risk_percent: 0.02
+      max_trades: 3
+    mini:  # $501-$2000
+      max_lot: 0.05
+      risk_percent: 0.015
+      max_trades: 5
+    standard:  # $2001-$10000
+      max_lot: 0.2
+      risk_percent: 0.01
+      max_trades: 7
+    professional:  # $10001+
+      max_lot: 1.0
+      risk_percent: 0.005
+      max_trades: 10
+      
+  # Trade execution controls
+  max_spread_multiplier: 1.5  # Reject trades when spread exceeds avg * multiplier
+  max_slippage_pips: 2  # Maximum allowed slippage for market orders
+  max_correlation_exposure: 2  # Maximum trades in correlated pairs
+  
+  # Trade management
+  position_aging_hours: 2  # Maximum hours before trade re-evaluation/closing
+  re_evaluation_interval_minutes: 30  # Interval for trade re-evaluation
+  
+  # Stop loss strategies
+  stop_loss:
+    default_strategy: "atr"  # Options: fixed, atr, structure
+    fixed_sl_pips: 15  # Fixed stop loss distance in pips
+    atr_multiplier: 1.5  # ATR multiplier for ATR-based stops
+    structure_buffer_pips: 3  # Buffer for structure-based stops
+    
+  # Take profit strategies
+  take_profit:
+    default_strategy: "multiple"  # Options: fixed, multiple, trailing
+    risk_reward_ratio: 2.0  # Reward-to-risk ratio for fixed TP
+    multiple:
+      tp1_ratio: 1.0  # First take profit at 1.0 * risk
+      tp2_ratio: 2.0  # Second take profit at 2.0 * risk
+      tp1_size: 0.5  # Close 50% at first take profit
+    trailing:
+      activation_ratio: 1.0  # Activate trailing after 1.0 * risk
+      trail_distance_pips: 20  # Trail by 20 pips
+
+# Strategy Settings
+strategies:
+  # Moving Average Crossover Strategy
+  moving_average_cross:
+    enabled: true  # Enable this strategy
+    name: "MA Cross Scalper"
+    fast_ma_period: 5  # Fast MA period
+    slow_ma_period: 20  # Slow MA period
+    ma_type: "ema"  # MA type: "sma" or "ema"
+    signal_threshold: 0.0001  # Minimum signal strength
+    use_confirmation: true  # Require price confirmation
+    take_profit_pips: 10  # Take profit in pips
+    stop_loss_pips: 5  # Stop loss in pips
+    risk_per_trade: 0.01  # Risk per trade (1%)
+    max_spread_pips: 2  # Maximum allowed spread
+  
+  # Bollinger Bands Breakout Strategy
+  bollinger_breakout:
+    enabled: true  # Enable this strategy
+    name: "Bollinger Breakout Scalper"
+    bb_period: 20  # Bollinger Band period
+    bb_std: 2.0  # Bollinger Band standard deviation
+    rsi_period: 14  # RSI period
+    rsi_overbought: 70  # RSI overbought level
+    rsi_oversold: 30  # RSI oversold level
+    use_rsi_filter: true  # Use RSI as confirmation
+    entry_atr_multiplier: 0.5  # Entry price deviation multiplier
+    atr_period: 14  # ATR period
+    take_profit_pips: 15  # Take profit in pips
+    stop_loss_pips: 8  # Stop loss in pips
+    risk_per_trade: 0.01  # Risk per trade (1%)
+    max_spread_pips: 2  # Maximum allowed spread
+
+  # Break and Retest Strategy
+  break_and_retest:
+    enabled: true  # Enable this strategy
+    name: "Break and Retest Scalper"
+    timeframe: "M5"  # Primary timeframe
+    symbols: ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD"]  # Trading pairs
+    sr_lookback_periods: 50  # Periods to look back for S/R levels
+    sr_touchpoints: 2  # Minimum touches to confirm S/R
+    zone_size_pips: 5  # Size of S/R zones in pips
+    min_breakout_pips: 10  # Min pips for valid breakout
+    retest_max_pips: 5  # Max pips from level for valid retest
+    confirmation_candles: 2  # Candles to confirm breakout
+    volume_confirmation: true  # Use volume for confirmation
+    min_volume_increase: 1.5  # Min volume multiplier for breakout
+    atr_period: 14  # ATR period for volatility filtering
+    atr_multiplier: 0.5  # ATR multiplier for stop loss
+    risk_reward_ratio: 2.0  # Risk-reward ratio for take profit
+    risk_per_trade: 0.01  # Risk per trade (1%)
+    max_spread_pips: 1.5  # Maximum allowed spread - tighter than other strategies
+    max_retests_per_level: 1  # Maximum number of retests to trade per level
+    level_expiry_bars: 50  # Number of bars before a level expires
+
+  # Break of Structure strategy parameters
+  break_of_structure:
+    lookback_periods: 20  # Number of bars to look back for swing points
+    min_swing_size_pips: 5  # Minimum size for a valid swing in pips
+    break_confirmation_bars: 1  # Number of bars to confirm break
+    use_trend_filter: true  # Whether to use trend filter
+    trend_ema_period: 50  # EMA period for trend filter
+    volume_filter: true  # Whether to use volume confirmation
+    volume_threshold: 1.3  # Volume increase threshold
+    atr_period: 14  # ATR period for stop loss
+    atr_multiplier: 1.0  # ATR multiplier for stop loss
+    risk_reward_ratio: 1.5  # Risk-reward ratio for take profit
+
+  # Fair Value Gap strategy parameters
+  fair_value_gap:
+    lookback_period: 100  # Bars to lookback for FVG detection
+    min_gap_size_pips: 5  # Minimum size for valid FVG in pips
+    max_gap_size_pips: 30  # Maximum size for valid FVG in pips
+    use_trend_filter: true  # Whether to use trend filter
+    trend_ema_period: 50  # EMA period for trend filter
+    volume_confirmation: true  # Use volume confirmation
+    volume_threshold: 1.5  # Volume increase threshold
+    gap_validity_periods: 50  # How long FVGs remain valid
+    mitigation_threshold: 0.5  # How much of gap must be filled (0-1)
+    atr_period: 14  # ATR period for stop loss
+    atr_multiplier: 1.0  # ATR multiplier for stop loss
+    risk_reward_ratio: 2.0  # Risk-reward ratio
+    risk_per_trade: 0.01  # Risk per trade (1%)
+
+  # JHook Pattern strategy parameters
+  jhook_pattern:
+    lookback_period: 50  # Number of bars to lookback for pattern identification
+    trend_strength: 10  # Minimum pips for initial trend move
+    reversal_strength: 5  # Minimum pips for reversal leg
+    consolidation_bars: 3  # Minimum bars in consolidation phase
+    volume_confirmation: true  # Whether to require volume confirmation
+    atr_filter: true  # Use ATR filter for volatility
+    atr_period: 14  # ATR period for volatility filtering
+    atr_multiplier: 1.0  # ATR multiplier for stop loss
+    risk_reward_ratio: 2.0  # Risk-reward ratio for take profit
+    risk_per_trade: 0.01  # Risk per trade (1%)
+
+  # MA + RSI Combo strategy parameters
+  ma_rsi_combo:
+    enabled: true  # Enable this strategy
+    name: "MA + RSI Combo"
+    timeframe: "M5"  # Primary timeframe
+    symbols: ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD"]  # Trading pairs
+    # Moving Average parameters
+    ema_period: 50  # EMA period to determine trend direction
+    # RSI parameters
+    rsi_period: 14  # RSI period
+    rsi_overbought: 70  # RSI overbought level
+    rsi_oversold: 30  # RSI oversold level
+    # Confirmation parameters
+    price_action_confirmation: true  # Require price action confirmation
+    volume_filter: true  # Filter based on volume
+    volume_threshold: 1.5  # Volume must be X times average
+    # Risk management
+    atr_period: 14  # ATR period for stop loss calculation
+    atr_multiplier: 1.2  # ATR multiplier for stop loss
+    risk_reward_ratio: 2.0  # Risk-reward ratio for take profit
+    risk_per_trade: 0.01  # Risk per trade (1%)
+    max_spread_pips: 3  # Maximum allowed spread
+
+  # Stochastic Cross strategy parameters
+  stochastic_cross:
+    enabled: true  # Enable this strategy
+    name: "Stochastic Cross Strategy"
+    timeframe: "M5"  # Primary timeframe
+    symbols: ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD"]  # Trading pairs
+    # Stochastic parameters
+    k_period: 14  # %K period
+    d_period: 3  # %D period
+    slowing: 3  # Slowing period
+    overbought: 80  # Overbought level
+    oversold: 20  # Oversold level
+    # Additional filter parameters
+    trend_filter: true  # Use trend filter for better quality signals
+    trend_ema_period: 100  # EMA period for trend filter
+    # Confirmation parameters
+    require_crossover: true  # Require full crossover for signal
+    # Risk management
+    atr_period: 14  # ATR period for stop loss calculation
+    atr_multiplier: 1.2  # ATR multiplier for stop loss
+    risk_reward_ratio: 1.8  # Risk-reward ratio for take profit
+    risk_per_trade: 0.01  # Risk per trade (1%)
+    max_spread_pips: 2.5  # Maximum allowed spread
+
+  # Break and Retest strategy parameters (improved)
+  bnr_strategy:
+    enabled: true  # Enable this strategy
+    name: "Break and Retest Enhanced"
+    timeframe: "M5"  # Primary timeframe
+    symbols: ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD"]  # Trading pairs
+    # Support/Resistance parameters
+    lookback_periods: 100  # Number of bars to look back for S/R levels
+    min_touches: 2  # Minimum number of touches for valid S/R level
+    price_threshold: 0.0005  # Price proximity threshold (0.05% of current price)
+    # Breakout parameters
+    breakout_threshold: 0.0010  # Minimum breakout size (0.1% of price)
+    confirmation_bars: 2  # Bars to confirm breakout
+    volume_confirmation: true  # Require increased volume on breakout
+    volume_threshold: 1.5  # Volume must be X times average
+    # Retest parameters
+    max_retest_bars: 20  # Maximum bars to wait for retest
+    retest_price_threshold: 0.0003  # How close price must get to broken level (0.03%)
+    # Risk management
+    atr_period: 14  # ATR period for stop loss calculation
+    atr_multiplier: 1.5  # ATR multiplier for stop loss
+    risk_reward_ratio: 2.0  # Risk-reward ratio for take profit
+    risk_per_trade: 0.01  # Risk per trade (1%)
+    max_retests_per_level: 1  # Maximum number of retests to trade per level
+    level_expiry_bars: 50  # Number of bars before a level expires
+
+  # JHook Pattern strategy (enhanced) parameters
+  jhook_strategy:
+    enabled: true  # Enable this strategy
+    name: "JHook Pattern Enhanced"
+    timeframe: "M5"  # Primary timeframe
+    symbols: ["EURUSD", "GBPUSD", "USDJPY", "AUDUSD"]  # Trading pairs
+    # Pattern detection parameters
+    lookback_period: 50  # Number of bars to lookback for pattern identification
+    trend_strength: 15  # Minimum pips for initial trend move
+    reversal_strength: 8  # Minimum pips for reversal leg
+    consolidation_bars_min: 3  # Minimum bars in consolidation phase
+    consolidation_bars_max: 10  # Maximum bars in consolidation phase
+    # Pattern validation parameters
+    volume_confirmation: true  # Whether to require volume confirmation
+    volume_threshold: 1.3  # Volume must be X times average during breakout
+    fib_retracement_min: 0.382  # Minimum Fibonacci retracement 
+    fib_retracement_max: 0.618  # Maximum Fibonacci retracement
+    # Risk management
+    atr_filter: true  # Use ATR filter for volatility
+    atr_period: 14  # ATR period for volatility filtering
+    atr_multiplier: 1.2  # ATR multiplier for stop loss
+    risk_reward_ratio: 2.2  # Risk-reward ratio for take profit
+    risk_per_trade: 0.01  # Risk per trade (1%)
+    pattern_expiry_hours: 24  # How long a pattern remains valid after detection
+
+# Correlation Management Configuration
+correlation:
+  high_correlation_threshold: 0.7  # Threshold for high correlation
+  medium_correlation_threshold: 0.5  # Threshold for medium correlation
+  data_lookback_days: 30  # Days of data to use for correlation calculations
+  correlation_update_hours: 12  # How often to update correlation matrix
+  max_correlated_exposure: 0.15  # Maximum exposure to correlated instruments
+  max_same_direction_exposure: 0.25  # Maximum exposure in same market direction
+  data_dir: "data"  # Directory to store correlation data
+  
+  # Predefined correlation groups for instruments without price history
+  predefined_correlation_groups:
+    major_usd_pairs: ["EURUSD", "GBPUSD", "AUDUSD", "NZDUSD"]
+    jpy_pairs: ["USDJPY", "EURJPY", "GBPJPY", "AUDJPY"]
+    volatility_indices: ["Volatility 10 Index", "Volatility 25 Index", "Volatility 50 Index", "Volatility 75 Index", "Volatility 100 Index"]
+    crash_indices: ["Crash 300 Index", "Crash 500 Index", "Crash 1000 Index"]
+    boom_indices: ["Boom 300 Index", "Boom 500 Index", "Boom 1000 Index"]
+    step_indices: ["Step Index"]
+    jump_indices: ["Jump 10 Index", "Jump 25 Index", "Jump 50 Index", "Jump 75 Index", "Jump 100 Index"]
+
+# Session Management Configuration
+sessions:
+  # Trading sessions in UTC
+  trading_sessions:
+    sydney:
+      start: "22:00"
+      end: "07:00"
+      timezone: "UTC"
+    tokyo:
+      start: "00:00"
+      end: "09:00"
+      timezone: "UTC"
+    london:
+      start: "08:00"
+      end: "17:00"
+      timezone: "UTC"
+    newyork:
+      start: "13:00"
+      end: "22:00"
+      timezone: "UTC"
+  
+  # Session overlaps (high liquidity periods)
+  session_overlaps:
+    tokyo_london:
+      start: "08:00"
+      end: "09:00"
+      timezone: "UTC"
+    london_newyork:
+      start: "13:00"
+      end: "17:00"
+      timezone: "UTC"
+  
+  # Instrument rotation settings
+  rotation_settings:
+    enabled: true
+    prefer_forex_in_session_overlaps: true
+    prefer_synthetics_in_low_liquidity: true
+    low_liquidity_periods:
+      - { start: "22:00", end: "00:00" }  # Between NY close and Tokyo open
+      - { start: "09:00", end: "13:00" }  # Between Tokyo close and NY open
+    weights:
+      session_activity: 0.7
+      volatility: 0.15
+      spread: 0.15
+    liquidity_threshold: 0.4  # Threshold for switching from forex to synthetic
+  
+  # Forex pairs by session preference
+  forex_by_session:
+    sydney: ["AUDUSD", "NZDUSD", "AUDJPY", "EURAUD", "AUDCAD"]
+    tokyo: ["USDJPY", "EURJPY", "GBPJPY", "AUDJPY", "CADJPY"]
+    london: ["EURUSD", "GBPUSD", "EURGBP", "USDCHF", "EURJPY"]
+    newyork: ["EURUSD", "GBPUSD", "USDCAD", "USDCHF", "USDJPY"]
+
+# Portfolio Optimization Configuration
+portfolio:
+  max_active_instruments: 10  # Maximum number of active instruments
+  max_same_category: 5  # Maximum instruments from same category
+  max_position_per_instrument: 2  # Maximum positions per instrument
+  base_allocation:
+    forex: 0.6  # 60% allocation to forex by default
+    synthetic: 0.4  # 40% allocation to synthetic indices by default
+  rebalance_frequency_hours: 24  # How often to rebalance portfolio
+  performance_decay_factor: 0.95  # Decay factor for historical performance
+  data_dir: "data"  # Directory to store portfolio data
+
+# Multi-Asset Trading Integration
+multi_asset:
+  enabled: true
+  # Strategy strengths for different instrument types
+  strategy_strengths:
+    forex:
+      moving_average_cross: 0.85
+      bollinger_breakout: 0.75
+      break_and_retest: 0.85
+      break_of_structure: 0.75
+      fair_value_gap: 0.70
+    synthetic:
+      volatility:
+        moving_average_cross: 0.80
+        bollinger_breakout: 0.90
+        break_and_retest: 0.65
+        break_of_structure: 0.60
+        fair_value_gap: 0.55
+      crash_boom:
+        moving_average_cross: 0.75
+        bollinger_breakout: 0.80
+        break_and_retest: 0.80
+        break_of_structure: 0.85
+        fair_value_gap: 0.60
+      step:
+        moving_average_cross: 0.95
+        bollinger_breakout: 0.80
+        break_and_retest: 0.60
+        break_of_structure: 0.70
+        fair_value_gap: 0.65
+      jump:
+        moving_average_cross: 0.80
+        bollinger_breakout: 0.85
+        break_and_retest: 0.70
+        break_of_structure: 0.75
+        fair_value_gap: 0.60
+  
+  # Parameters for evaluating market conditions across different instrument types
+  market_condition_weights:
+    volatility: 0.25
+    trend_strength: 0.25
+    liquidity: 0.2
+    spread: 0.15
+    volume: 0.15
+
+# Price Action Analysis Configuration
+price_action:
+  enabled: true
+  min_body_to_wick_ratio: 2.0          # Minimum ratio of body size to wick for strong candles
+  strong_candle_threshold: 0.7         # Minimum body size relative to total candle for strong candles
+  pin_bar_threshold: 3.0               # Minimum wick to body ratio for pin bars
+  engulfing_threshold: 1.2             # Minimum size ratio for engulfing patterns
+  key_level_lookback: 200              # Number of candles to analyze for key levels
+  pattern_confidence_threshold: 0.7    # Minimum confidence for pattern recognition
+  level_clustering_threshold: 0.001    # Price difference threshold for clustering similar levels
+  use_in_strategy_selection: true      # Whether to use price action in strategy selection
+
+# Market Condition Detector Configuration
+market_condition_detector:
+  enabled: true
+  trend_lookback: 100                  # Number of candles to analyze for trend detection
+  volatility_window: 20                # Window size for volatility calculation
+  liquidity_threshold: 0.4             # Threshold for low liquidity detection
+  trend_strength_threshold: 0.6        # Minimum value for strong trend classification
+  cache_expiry_seconds: 300            # How long to cache market condition results
+  min_trading_confidence: 0.6          # Minimum confidence to recommend trading
+  volatility_categories:               # Thresholds for volatility categories
+    low: 0.4                           # Max normalized ATR for low volatility
+    medium: 0.8                        # Max normalized ATR for medium volatility
+    high: 10.0                         # Max normalized ATR for high volatility (effectively no limit)
+  condition_weighting:                 # Weighting for different condition factors
+    trend: 0.4                         # Weight of trend in strategy selection
+    volatility: 0.3                    # Weight of volatility in strategy selection
+    liquidity: 0.2                     # Weight of liquidity in strategy selection
+    price_action: 0.1                  # Weight of price action in strategy selection
+
+# Strategy Selector Configuration
+strategy_selector:
+  enabled: true  # Enable automatic strategy selection
+  selection_timeframe: "H1"  # Timeframe for market analysis (higher than trading timeframe)
+  analysis_lookback: 100  # Number of bars to analyze for market conditions
+  market_state_update_interval: 3600  # How often to update market state analysis (seconds)
+  
+  # Market condition thresholds
+  volatility_thresholds:
+    low: 0.0003    # 0.03% price change per period (low volatility)
+    medium: 0.0007  # 0.07% price change per period (medium volatility)
+    high: 0.0012    # 0.12% price change per period (high volatility)
+  
+  trend_thresholds:
+    weak: 0.20      # ADX below 20 indicates weak trend
+    moderate: 0.40  # ADX between 20-40 indicates moderate trend
+    strong: 0.60    # ADX above 40 indicates strong trend
+  
+  # Strategy performance in different market conditions
+  # Values from 0 (weak) to 10 (strong)
+  strategy_weights:
+    # Break and Retest is effective in ranging markets with clear support/resistance
+    break_and_retest:
+      ranging_market: 9
+      trending_market: 5
+      high_volatility: 4
+      low_volatility: 8
+      bullish_market: 7
+      bearish_market: 7
+    
+    # Break of Structure works best in trending markets
+    break_of_structure:
+      ranging_market: 4
+      trending_market: 9
+      high_volatility: 7
+      low_volatility: 5
+      bullish_market: 8
+      bearish_market: 8
+    
+    # Fair Value Gap works well in both trending and ranging markets
+    fair_value_gap:
+      ranging_market: 7
+      trending_market: 8
+      high_volatility: 8
+      low_volatility: 6
+      bullish_market: 7
+      bearish_market: 7
+    
+    # JHook Pattern excels in trending markets with pullbacks
+    jhook_pattern:
+      ranging_market: 3
+      trending_market: 9
+      high_volatility: 7
+      low_volatility: 5
+      bullish_market: 8
+      bearish_market: 8
+
+# Execution Settings
+executor:
+  max_slippage_pips: 3  # Maximum allowed slippage
+  default_deviation: 20  # Price deviation in points
+  async_execution: true  # Asynchronous order execution
+  retry_attempts: 3  # Order retry attempts
+  retry_delay: 1  # Seconds between retry attempts
+
+# Logging Settings
+logging:
+  level: "INFO"  # Logging level: DEBUG, INFO, WARNING, ERROR
+  file_format: "{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {message}"
+  console_format: "{time:HH:mm:ss} | {level: <8} | {message}"
+  directory: "logs"  # Directory to store log files

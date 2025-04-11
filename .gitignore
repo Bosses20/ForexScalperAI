@@ -1,0 +1,93 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+.env
+.venv
+ENV/
+
+# Flutter/Dart
+# Mobile application specific
+/mobile_app/.dart_tool/
+/mobile_app/.flutter-plugins
+/mobile_app/.flutter-plugins-dependencies
+/mobile_app/.packages
+/mobile_app/.pub/
+/mobile_app/build/
+/mobile_app/.flutter-plugins
+/mobile_app/.flutter-plugins-dependencies
+/mobile_app/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+
+# MetaTrader 5 files
+*.ex4
+*.ex5
+*.set
+Experts/logs/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+.atom/
+.buildlog/
+*.iml
+*.ipr
+*.iws
+.project
+.settings/
+.classpath
+
+# Logs
+*.log
+logs/
+log/
+
+# Database
+*.sqlite
+*.db
+
+# Data files
+*.pickle
+*.pkl
+*.h5
+*.hdf5
+*.npy
+*.npz
+
+# Generated test reports
+/test_results/
+
+# JWT keys
+/keys/private.pem
+/keys/public.pem
+
+# User specific configs
+user_config.yaml
+
+# AI data - large files
+/data/ai_data/models/*.model

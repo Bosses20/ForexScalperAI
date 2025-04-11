@@ -1,0 +1,32 @@
+# Forex Trading Bot Backup Configuration
+# This file defines all settings for the automatic backup system
+
+# Main backup settings
+app_dir: /opt/forex-trading-bot
+backup_dir: /var/backups/forex-trading-bot
+backup_retention_days: 30
+backup_frequency: daily  # Options: hourly, daily, weekly
+max_backup_size_mb: 500
+backup_on_shutdown: true
+
+# Components to include in backups
+backup_components:
+  config: true      # Configuration files
+  data: true        # Trading data and history
+  database: true    # Database files
+  logs: false       # Log files (disabled by default to save space)
+
+# S3 backup settings for offsite storage
+use_s3_backup: true
+s3_bucket: s3://trading-bot-backups
+s3_region: us-east-1
+
+# Backup scheduling
+scheduled_backup_time: "01:00"  # 24-hour format (1 AM)
+backup_day_of_week: 1           # For weekly backups (1 = Monday)
+
+# Notification settings
+backup_notifications:
+  success: true
+  failure: true
+  warning: true

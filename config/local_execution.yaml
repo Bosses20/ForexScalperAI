@@ -1,0 +1,93 @@
+# Local Execution Configuration
+# This configuration is optimized for running the bot locally on a mobile phone or laptop
+
+execution:
+  mode: "local"  # Options: local, vps, cloud
+  device_type: "auto"  # auto, mobile, desktop - auto will detect based on system specs
+  
+  # Performance optimization
+  resource_management:
+    limit_cpu_usage: true
+    max_cpu_percent: 70  # Maximum CPU usage
+    limit_memory: true
+    max_memory_mb: 500  # Maximum memory usage in MB
+    background_mode: true  # Run in background on mobile devices
+    battery_optimization:
+      enabled: true
+      min_battery_percent: 20  # Minimum battery percentage to run
+      reduce_features_on_low_battery: true
+  
+  # Runtime persistence
+  persistence:
+    auto_restart: true  # Restart bot if it crashes
+    save_state_interval_seconds: 300  # How often to save bot state
+    keep_alive_interval_seconds: 60  # How often to check if bot is running
+    recover_from_last_state: true  # Resume from last saved state if interrupted
+  
+  # API server settings for mobile app communication
+  local_api:
+    enabled: true
+    host: "127.0.0.1"  # Use localhost for security
+    port: 8000  # Port for the API server
+    secure_mode: true
+    allowed_ips: ["127.0.0.1"]  # Only allow local connections
+  
+  # Mobile specific settings
+  mobile:
+    prevent_sleep_mode: true  # Keep device awake while trading
+    network_requirements:
+      require_wifi: false  # If true, only trade on WiFi
+      min_connection_speed_mbps: 1.0
+    notification_channel: "high_priority"  # For Android notification importance
+  
+  # Desktop specific settings
+  desktop:
+    minimize_to_tray: true
+    start_with_system: false
+    priority_class: "normal"  # process priority: low, normal, high
+
+# Data storage for local execution
+storage:
+  local_data_path: "data"  # Relative to project root
+  db_type: "sqlite"  # lightweight database for local storage
+  max_storage_size_mb: 500
+  cleanup_interval_days: 7  # Auto cleanup old data
+  backup_enabled: true
+  backup_interval_hours: 24
+
+# Local monitoring setup
+monitoring:
+  log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  health_check_interval_seconds: 30
+  system_metrics_logging: true
+  trade_metrics_logging: true
+  
+  # Local alerts (doesn't require external services)
+  alerts:
+    app_notification: true
+    desktop_notification: true
+    sound_alerts: true
+    critical_error_vibration: true  # Mobile only
+  
+  # Recovery actions
+  recovery:
+    max_retry_attempts: 3
+    pause_trading_on_repeated_errors: true
+    auto_restart_on_crash: true
+    safe_shutdown_enabled: true  # Properly close positions if app is closing
+
+# Connection management for mobile devices
+connection:
+  reconnect_attempts: 5
+  reconnect_interval_seconds: 10
+  disconnect_grace_period_seconds: 60  # How long to wait before considering disconnected
+  use_websocket_for_efficiency: true
+  adaptive_polling: true  # Adjust polling frequency based on market activity
+
+# Synchronization with mobile app
+sync:
+  enabled: true
+  sync_interval_seconds: 5
+  sync_on_trade_events: true
+  sync_on_significant_market_events: true
+  prioritize_critical_updates: true  # During connection issues, send only important updates

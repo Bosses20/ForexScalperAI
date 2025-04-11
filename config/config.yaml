@@ -1,0 +1,111 @@
+# ForexScalperAI Configuration
+
+# API credentials (never commit this file with real credentials)
+api:
+  exchange: "deriv"  # Supported: deriv, oanda, fxcm or any ccxt-supported exchange
+  api_key: "YOUR_API_KEY"
+  api_secret: "YOUR_API_SECRET"
+  demo_mode: true  # Set to false for live trading
+
+# Trading parameters
+trading:
+  pairs:
+    - "EUR/USD"
+    - "GBP/USD"
+    - "USD/JPY"
+  
+  # Trading schedule (UTC time)
+  schedule:
+    enabled: true
+    active_hours:
+      - start: "08:00"
+        end: "16:00"
+      - start: "20:00"
+        end: "24:00"
+  
+  # Order parameters
+  order:
+    leverage: 1  # Leverage multiplier (1 = no leverage)
+    max_open_positions: 3
+    max_daily_trades: 20
+    min_spread: 0.5  # Maximum acceptable spread in pips
+
+# Strategy parameters
+strategy:
+  timeframe: "1m"  # 1m, 5m, etc.
+  
+  # Technical indicators
+  indicators:
+    ema:
+      fast_period: 5
+      slow_period: 8
+    rsi:
+      period: 5
+      overbought: 70
+      oversold: 30
+    bollinger:
+      period: 20
+      std_dev: 2.0
+  
+  # Entry conditions
+  entry:
+    min_signal_strength: 0.7
+    confirm_with_multiple_indicators: true
+    
+  # Exit conditions
+  exit:
+    take_profit_pips: 5
+    stop_loss_pips: 3
+    trailing_stop: true
+    trailing_distance_pips: 2
+
+# Risk management
+risk:
+  max_risk_per_trade: 0.01  # 1% of account balance
+  max_daily_risk: 0.05  # 5% of account balance
+  max_drawdown_percent: 0.15  # 15% drawdown triggers trading halt
+
+# Machine learning models
+models:
+  price_prediction:
+    enabled: true
+    model_type: "lstm"  # lstm, xgboost, etc.
+    lookback_periods: 30
+    prediction_horizon: 5
+    confidence_threshold: 0.65
+    retrain_interval_hours: 24
+  
+  reinforcement:
+    enabled: true
+    model_type: "dqn"
+    reward_function: "profit_sharpe"  # profit_only, profit_sharpe, etc.
+
+# Data collection
+data:
+  store_historical: true
+  tick_data: true
+  orderbook_depth: 10
+  features_to_extract:
+    - "price_action"
+    - "volatility"
+    - "orderbook_imbalance"
+    - "spread"
+    - "volume"
+
+# Performance analytics
+analytics:
+  log_trades: true
+  calculate_metrics:
+    - "win_rate"
+    - "profit_factor"
+    - "sharpe_ratio"
+    - "max_drawdown"
+  reporting_interval: "daily"  # daily, weekly, monthly
+
+# Mobile API settings
+api_server:
+  enabled: true
+  host: "0.0.0.0"
+  port: 8000
+  require_auth: true
+  ssl_enabled: false  # Enable in production!

@@ -1,0 +1,40 @@
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: 'smtp.example.com:587'
+  smtp_from: 'alertmanager@tradingbot.com'
+  smtp_auth_username: 'alertmanager@tradingbot.com'
+  smtp_auth_password: '{{ smtp_password }}'  # Use environment variable in production
+
+route:
+  group_by: ['alertname', 'severity']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  receiver: 'trading-team-email'
+  routes:
+  - match:
+      severity: critical
+    receiver: 'trading-team-pager'
+    repeat_interval: 30m
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname']
+
+receivers:
+- name: 'trading-team-email'
+  email_configs:
+  - to: 'trading-team@example.com'
+    send_resolved: true
+
+- name: 'trading-team-pager'
+  pagerduty_configs:
+  - service_key: '{{ pagerduty_key }}'  # Use environment variable in production
+    send_resolved: true
+
+  webhook_configs:
+  - url: 'https://api.telegram.org/bot{{ telegram_token }}/sendMessage?chat_id={{ chat_id }}&text={{ .GroupLabels.alertname }}: {{ .CommonAnnotations.summary }}'
+    send_resolved: true
