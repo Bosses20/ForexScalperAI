@@ -111,9 +111,82 @@ The system includes comprehensive backtesting capabilities:
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+## Mobile and Desktop Applications
+
+### Mobile App (Flutter)
+
+The ForexScalperAI mobile app allows you to monitor and control your trading activities from anywhere, with offline capabilities.
+
+**Key Features:**
+- Real-time trade monitoring
+- Risk management controls
+- Market condition visualization
+- Portfolio performance tracking
+- Offline mode for limited connectivity scenarios
+- Secure authentication with JWT
+
+**Building the Mobile App:**
+1. Install Flutter (https://flutter.dev/docs/get-started/install)
+2. Ensure that Git is in your PATH
+3. Navigate to the mobile app directory:
+   ```
+   cd mobile_app
+   ```
+4. Get dependencies:
+   ```
+   flutter pub get
+   ```
+5. Build the APK:
+   ```
+   flutter build apk --release
+   ```
+6. The APK will be located at:
+   ```
+   build/app/outputs/flutter-apk/app-release.apk
+   ```
+
+### Desktop Application
+
+The desktop application provides full control over the trading system with advanced analytics and backtesting capabilities.
+
+**Key Features:**
+- Complete strategy management
+- Advanced backtesting interface
+- Risk parameter configuration
+- Full MT5 integration setup
+- Real-time performance metrics
+- System health monitoring
+
+**Building the Desktop App:**
+1. Ensure Python 3.8+ is installed
+2. Navigate to the desktop app directory:
+   ```
+   cd desktop_app
+   ```
+3. Install required packages:
+   ```
+   pip install -r requirements.txt
+   ```
+4. Run the application:
+   ```
+   python main.py
+   ```
+5. To build an executable:
+   ```
+   pip install pyinstaller
+   pyinstaller --onefile --windowed main.py
+   ```
+6. The executable will be in the `dist` folder
+
+## Future Release Plans
+
+We plan to provide pre-built binaries for both the mobile and desktop applications in future GitHub releases. Stay tuned!
+
 ## Acknowledgments
 
 - Built with the MetaTrader 5 Python API
+- Mobile app developed with Flutter
+- Desktop interface built with PyQt
 - Inspired by professional trading systems used in hedge funds
 
 ## Disclaimer
